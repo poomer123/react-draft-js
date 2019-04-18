@@ -1,17 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Editor, EditorState, RichUtils } from 'draft-js'
+import InlineStyleControls from './InlineStyleControls'
+import BlockStyleControls from './BlockStyleControls'
 
 const App = (props) => {
     const [editorState, setEditorState] = useState( EditorState.createEmpty() )
     const editor = useRef(null)
-    
-    const style = {
-        editor: {
-            border: '1px solid gray',
-            minHeight: '150px',
-            width: '400px'
-        }
-    }
 
     function focusEditor() {
         editor.current.focus()
@@ -21,29 +15,39 @@ const App = (props) => {
         const newState = RichUtils.handleKeyCommand(editorState, command)
         if (newState) {
             setEditorState(newState)
-            return 'handled'
+            return true
         }
-        return 'not-handled'
+        return false
     }
 
-    const onBoldClick = () => {
-        setEditorState(RichUtils.toggleInlineStyle(editorState, 'BOLD'))
+    function toggleInlineStyle(inlineStyle) {
+        setEditorState(
+            RichUtils.toggleInlineStyle(editorState, inlineStyle)
+        )
     }
 
-    const onUnderlineClick = () => {
-        setEditorState(RichUtils.toggleInlineStyle(editorState, 'UNDERLINE'));
+    function toggleBlockType(blockType) {
+        setEditorState(
+            RichUtils.toggleBlockType(editorState, blockType)
+        )
     }
-    
+
     useEffect(() => {
         focusEditor()
     }, [])
 
     return (
-        <div className="editorContainer">
+        <div>
             <h1>React with Draft.js</h1>
-            <div className="editors" style={style.editor} onClick={focusEditor}>
-                <button onClick={onBoldClick}><b>B</b></button>
-                <button onClick={onUnderlineClick}><b>U</b></button>
+            <div className="RichEditor-root" onClick={focusEditor}>
+                <BlockStyleControls
+                    editorState={editorState}
+                    onToggle={toggleBlockType}
+                />
+                <InlineStyleControls
+                    editorState={editorState}
+                    onToggle={toggleInlineStyle}
+                />
                 <Editor
                     ref={editor}
                     editorState={editorState}
