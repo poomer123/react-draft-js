@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Editor, EditorState, RichUtils } from 'draft-js'
+import { Editor, EditorState, RichUtils, convertToRaw } from 'draft-js'
+import { stateToHTML } from 'draft-js-export-html'
 import InlineStyleControls from './InlineStyleControls'
 import BlockStyleControls from './BlockStyleControls'
 
@@ -36,6 +37,10 @@ const App = (props) => {
         focusEditor()
     }, [])
 
+    useEffect(() => {
+        console.log(convertToRaw(editorState.getCurrentContent()))
+    }, [editorState])
+
     return (
         <div>
             <h1>React with Draft.js</h1>
@@ -55,6 +60,12 @@ const App = (props) => {
                     handleKeyCommand={handleKeyCommand}
                 />
             </div>
+            <hr />
+            <div>
+                {stateToHTML(editorState.getCurrentContent())}
+            </div>
+            <hr />
+            <div dangerouslySetInnerHTML={{ __html: stateToHTML(editorState.getCurrentContent()) }} />
         </div>
     )
     
